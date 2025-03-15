@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-
 import Image from 'next/image';
 
 type Pokemon = {
@@ -24,31 +23,30 @@ export default function PokemonDetail() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_POKEMON_API_BASE;
+  const API_BASE_URL = process.env.NEXT_PUBLIC_POKEMON_API_BASE ; 
 
-    if (!id) return;
+  const fetchPokemon = useCallback(async () => {
+    if (!id) return;  
 
-    const fetchPokemon = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const res = await fetch(`${API_BASE_URL}/pokemon/${id}`);
-        if (!res.ok) throw new Error("Pokemon not found");
-        const data = await res.json();
-        setPokemon(data);
-      } catch (error) {
-        console.error("Error loading Pokémon details:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    setIsLoading(true);
+    setError(null);
 
-    if(id){
-      useEffect(() => {
-        fetchPokemon();
-      }, [id]);
+    try {
+      const res = await fetch(`${API_BASE_URL}/pokemon/${id}`);
+      if (!res.ok) throw new Error("Failed to fetch Pokémon data");
+      const data = await res.json();
+      setPokemon(data);
+    } catch (err) {
+      setError("Failed to load Pokémon details.");
+      console.error("Error fetching Pokémon:", err);
+    } finally {
+      setIsLoading(false);
     }
+  }, [id, API_BASE_URL]);
 
+  useEffect(() => {
+    fetchPokemon(); 
+  }, [fetchPokemon]);
 
   if (isLoading)
     return (
@@ -72,7 +70,6 @@ export default function PokemonDetail() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-900 via-blue-600 to-indigo-900 p-6">
-      {/* Back Button Aligned to Left */}
       <div className="w-full max-w-3xl">
         <div className="w-full flex justify-start mb-4">
           <button
@@ -115,7 +112,6 @@ export default function PokemonDetail() {
           </div>
         </div>
 
-        {/* Stats Section */}
         <h2 className="text-xl font-bold mt-6">Stats</h2>
         <div className="space-y-2">
           {pokemon.stats.map(({ base_stat, stat }) => (
@@ -129,7 +125,6 @@ export default function PokemonDetail() {
           ))}
         </div>
 
-        {/* Moves Section */}
         <h2 className="text-xl font-bold mt-6">Moves</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 mt-2">
           {pokemon.moves.slice(0, 20).map(({ move }) => (
