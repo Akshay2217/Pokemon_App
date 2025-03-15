@@ -45,7 +45,7 @@ export default function PokemonDetail() {
 
     useEffect(() => {
       fetchPokemon();
-    }, [API_BASE_URL]);
+    }, []);
 
 
   if (isLoading)
