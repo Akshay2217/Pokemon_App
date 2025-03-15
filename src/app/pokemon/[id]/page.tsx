@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
+import Image from 'next/image';
+
 type Pokemon = {
   id: number;
   name: string;
@@ -55,12 +57,12 @@ export default function PokemonDetail() {
   if (error || !pokemon)
     return (
       <div className="flex flex-col items-center justify-center h-screen text-white">
-        <h1 className="text-2xl font-bold mb-4">Pokémon Not Found</h1>
+        <h1 className="text-2xl font-bold mb-4">Pokemon Not Found</h1>
         <button
           className="px-4 py-2 bg-white/30 backdrop-blur-lg text-white rounded-lg transition-all duration-300 hover:bg-white/40 hover:scale-105"
           onClick={() => router.push("/")}
         >
-          Return to Pokédex
+          Return to Pokemon List
         </button>
       </div>
     );
@@ -81,11 +83,12 @@ export default function PokemonDetail() {
 
       <div className="w-full max-w-3xl bg-white/10 backdrop-blur-md shadow-xl rounded-2xl p-8 border border-white/20 text-white">
         <div className="flex flex-col md:flex-row items-center">
-          <img
+          <Image
             src={pokemon.sprites.other["official-artwork"].front_default || pokemon.sprites.front_default}
             alt={pokemon.name}
             width={250}
             height={250}
+            priority 
             className="object-contain w-48 h-48 transition-transform duration-300 hover:scale-105"
           />
 
