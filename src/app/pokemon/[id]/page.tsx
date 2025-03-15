@@ -26,7 +26,6 @@ export default function PokemonDetail() {
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_POKEMON_API_BASE;
 
-  useEffect(() => {
     if (!id) return;
 
     const fetchPokemon = async () => {
@@ -38,14 +37,16 @@ export default function PokemonDetail() {
         const data = await res.json();
         setPokemon(data);
       } catch (error) {
-        setError("Failed to load Pokémon");
+        console.error("Error loading Pokémon details:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchPokemon();
-  }, [id]);
+    useEffect(() => {
+      fetchPokemon();
+    }, [API_BASE_URL]);
+
 
   if (isLoading)
     return (

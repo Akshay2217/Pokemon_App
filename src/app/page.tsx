@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -33,21 +33,21 @@ export default function Home() {
   const API_BASE_URL = process.env.NEXT_PUBLIC_POKEMON_API_BASE;
   const LIMIT = 50;
 
-  const fetchPokemons = async (newOffset: number) => {
+  const fetchPokemons = useCallback(async (newOffset: number) => {
     if (!hasMore) return;
     setIsLoading(true);
     setError(null);
-
+  
     try {
       const res = await fetch(`${API_BASE_URL}/pokemon?limit=${LIMIT}&offset=${newOffset}`);
       const data: { results: Pokemon[] } = await res.json();
-
+  
       if (!data.results || data.results.length === 0) {
         setHasMore(false);
         setIsLoading(false);
         return;
       }
-
+  
       const pokemonDetails = await Promise.all(
         data.results.map(async (pokemon) => {
           try {
@@ -55,26 +55,27 @@ export default function Home() {
             const res = await fetch(`${API_BASE_URL}/pokemon/${pokemonIdOrName}`);
             return (await res.json()) as PokemonDetails;
           } catch (err) {
-            console.error("Error:", error);
+            console.error(`Error fetching ${pokemon.name}:`, err);
+            return null;
           }
         })
       );
-
+  
       const validPokemons = pokemonDetails.filter(Boolean) as PokemonDetails[];
       setPosts((prev) => [...prev, ...validPokemons]);
       setFilteredPosts((prev) => [...prev, ...validPokemons]);
       setOffset(newOffset + LIMIT);
     } catch (error) {
-      setError("Failed to load Pokemon data.");
-      console.error("Error fetching Pokemon:", error);
+      console.error("Error fetching Pokémon:", error);
+      setError("Failed to load Pokémon data.");
     } finally {
       setIsLoading(false);
     }
-  };
-
+  }, [API_BASE_URL, hasMore]); // Dependencies added
+  
   useEffect(() => {
     fetchPokemons(0);
-  }, [API_BASE_URL]);
+  }, [fetchPokemons]);
 
   useEffect(() => {
     const filtered = posts.filter((pokemon) =>
