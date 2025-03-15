@@ -8,13 +8,17 @@ interface Pokemon {
   url: string;
 }
 
+interface PokemonSprites {
+  other: {
+    'official-artwork': { front_default: string | null };
+  };
+  front_default: string;
+}
+
 interface PokemonDetails {
   id: number;
   name: string;
-  sprites: {
-    other: any;
-    front_default: string;
-  };
+  sprites: PokemonSprites
 }
 
 export default function Home() {
@@ -51,8 +55,7 @@ export default function Home() {
             const res = await fetch(`${API_BASE_URL}/pokemon/${pokemonIdOrName}`);
             return (await res.json()) as PokemonDetails;
           } catch (err) {
-            console.error(`Error fetching ${pokemon.name}:`, err);
-            return null;
+            console.error("Error:", error);
           }
         })
       );
@@ -70,8 +73,8 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchPokemons(0); 
-  }, []);
+    fetchPokemons(0);
+  }, [API_BASE_URL]);
 
   useEffect(() => {
     const filtered = posts.filter((pokemon) =>
