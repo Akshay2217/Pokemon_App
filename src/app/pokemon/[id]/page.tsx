@@ -43,9 +43,11 @@ export default function PokemonDetail() {
       }
     };
 
-    useEffect(() => {
-      fetchPokemon();
-    }, []);
+    if(id){
+      useEffect(() => {
+        fetchPokemon();
+      }, [id]);
+    }
 
 
   if (isLoading)
